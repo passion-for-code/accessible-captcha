@@ -24,8 +24,10 @@ class AccessibleCaptcha {
 	 * the key is the attributeName and the value the attributeValue;
 	* e. g. 'size'=> 4 ends in size="4"
 	 */
-	private $inputField = array('size'=> 4);
-	// the name of the session array, that is needed.
+	private $inputFieldAttributes = array('size'=> 4);
+	/*
+	 * put here the name of a not used session variable. We need this for storing captcha informations in it.
+	 */
 	private $sessionVarName = 'captchaId';
 	private $challengeList = array("add", "sub", "mul", "div", "estimate", "count",
 		"reverse", "empty_field");
@@ -43,6 +45,7 @@ class AccessibleCaptcha {
 	 */
 	public function __construct($language = false) {
 		$this->pathToClassDir = dirname(__FILE__) .'/';
+		$this->loadConfig();
 		$this->setLanguage($language);
 	}/*EndOfFunction*/
 
@@ -114,11 +117,49 @@ class AccessibleCaptcha {
 		if($lang == false || !$this->existsLanguage($lang) ) return;
 		$this->language = $lang;
 	}
+
+	/*
+	 * Sets the attributes of the result field.
+	 * The result field is the field, where the user enters the solution for a captcha.
+	 *@param array $attributes the key of every entry is the attribute name and the value is the attribute value.
+	 * @since 1.0
+	 */
+	public function setInputFieldAttributes($data) {
+		//check if data is no array, we break.
+		if(!is_array($data) ) return;
+		//First delete the attribute "name", if it is set.
+		unset($data['name']);
+		$this->inputFieldAttributes = $data;
+	} //EndOfMethod
+
+	/**
+	 * Sets the allowed list of challenge types.
+	 * @param mixed $challengeList A array with a list of allowed challenge types. Or a String 'all', for allow all types.
+	 * sinze 1.0
+	 */
+	public function setChallengeList($challengeList) {
+		if(!is_array($challengeList) ) return;
+		$this->challengeList = $challengeList;
+	} //EndOfMethod.
+		public function setSessionVarName($name) {
+		if(!is_string($name) ) return;
+		$this->sessionVarName = $name;
+	}//EndOfMethod
+	/**
+	 * Sets the path to the language directory.
+	 * @param string $pathToDir The relative path to the language directory.
+	 * since 1.0
+	 */
+	public function setLangDir($pathToDir) {
+		$this->langDir = $pathToDir;
+	} //EndOfMethod
+
 	/**
 	 * Checks if a directory with this name exists in the language directory.
 	 * 
 	 * @param string $lang The language
 	 * @return boolean true, if the language exists, otherways false.
+	 * since 1.0
 	 */
 	public function existsLanguage($lang) {
 		return file_exists($this->pathToClassDir . $this->langDir .'/'. $lang );
@@ -492,12 +533,30 @@ class AccessibleCaptcha {
 	 */
 	private function getResultField() {
 		$inputField = '<input type="text" name="'. $this->nameOfResultField .'" ';
-		foreach( $this->inputField as $attribute => $value) {
+		foreach( $this->inputFieldAttributes as $attribute => $value) {
 			$inputField .= $attribute .'="'. $value .'" ';
 		}
 		$inputField .= '/>';
 		return $inputField;
 	}
+
+	/*
+	 * loads the config file and calls for every defined option the setMethod.
+	 * @param string $pathToConfig the relative Path to the config file.
+	 * @since 1.0
+	 */
+	protected function loadConfig($path='config.php') {
+		$path = $this->pathToClassDir . $path;
+		if(file_exists($path) ) include($path);
+		else return;;
+		foreach($config as $key => $value) {
+			// make a correct setMethod from the string.
+				$key = 'set'. ucfirst($key);
+			if(method_exists($this, $key) ) {
+		$this->$key($value);
+			}//EndOfIf
+		} //EndOfForeach
+	}//EndOfMethod.
 
 	// debug section.
 	public function debug() {
