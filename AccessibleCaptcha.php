@@ -47,7 +47,7 @@ class AccessibleCaptcha {
 		$this->pathToClassDir = dirname(__FILE__) .'/';
 		$this->loadConfig();
 		$this->setLanguage($language);
-	}/*EndOfFunction*/
+	}//EndOfMethod
 
 	/**
 	 * Returns a captcha and all needed input fields.
@@ -74,7 +74,7 @@ class AccessibleCaptcha {
 
 		// finally return the generated challenge.
 		return $this->challenge;
-	} /*EndOfFunction*/
+	} //EndOfMethod
 
 	/**
 	 * Checks a solved captcha, if it is correct.
@@ -103,9 +103,9 @@ class AccessibleCaptcha {
 		if( $s['result'] == strtoupper( trim($result) ) ) {
 			// When $timeout is false, or the captcha is even valid returns true.
 			if(!$timeout || ($s['timestamp']+$timeout) > time() ) return true;
-		} /*EndOfIf*/
+		} //EndOfIf
 		return false;
-	}/*EndOfFunction*/
+	} //EndOfMethod
 
 	/**
 	 * Sets the language.
@@ -226,7 +226,7 @@ class AccessibleCaptcha {
 		// start a session, when no session is started.
 		if(!isset($_SESSION) ) session_start();
 		$_SESSION[$this->sessionVarName][$id] = $data;
-	}/*EndOfFunction*/
+	} //EndOfMethod
 
 	/**
 	 * Returns data from session, if it exists. This method must be overwritten,
@@ -242,7 +242,7 @@ class AccessibleCaptcha {
 		// check if $result == the saved Result in Session.
 		if( isset($_SESSION[$this->sessionVarName][$id]) ) return $_SESSION[$this->sessionVarName][$id];
 		return false;
-	}/*EndOfFunction*/
+	} //EndOfMethod
 
 	/**
 	 * Deletes data from session, if it exists. This method must be overwritten,
@@ -290,8 +290,8 @@ class AccessibleCaptcha {
 		// break condition for the recursion
 		if($stop === $this->challengeId) throw new ErrorException("Can't find any challenge.", 0);
 			$this->loadChallengeText($stop);
-		} /*EndOfElse*/
-	} /*EndOfFunction*/
+		} //EndOfElse 
+	} //EndOfMethod
 
 	/*
 	 * Calls the right method to generates a correct challenge.
@@ -301,7 +301,7 @@ class AccessibleCaptcha {
 	private function generateChallenge() {
 		$type = $this->challengeList[ $this->challengeId ];
 		call_user_func( array($this, $type) );
-	} /*EndOfFunction*/
+	} //EndOfMethod
 
 	/*
 	 * Generates a add type challenge.
@@ -316,7 +316,7 @@ class AccessibleCaptcha {
 		$a['arg1'] = mt_rand(0, 1) ? $a['arg1'] : numberToString($a['arg1']);
 		$a['arg2'] = mt_rand(0, 1) ? $a['arg2'] : numberToString($a['arg2']);
 		$this->replace($a);
-	} /*EndOfFunction*/
+	} //EndOfMethod
 
 
 	/*
@@ -333,7 +333,7 @@ class AccessibleCaptcha {
 		$a['minuend'] = mt_rand(0,1) ? $a['minuend'] : numberToString($a['minuend']);
 		$a['subtrahend'] = mt_rand(0,1) ? $a['subtrahend'] : numberToString($a['subtrahend']);
 		$this->replace($a);
-	} /*EndOfFunction*/
+	} //EndOfMethod
 
 	/*
 	 * Generates a mul type challenge.
@@ -350,7 +350,7 @@ class AccessibleCaptcha {
 		$a['arg2'] = mt_rand(0, 1) ? $a['arg2'] : numberToString($a['arg2']);
 
 		$this->replace($a);
-	} /*EndOfFunction*/
+	} //EndOfMethod
 
 	/*
 	 * Generates a div type challenge.
@@ -367,7 +367,7 @@ class AccessibleCaptcha {
 		while($a['dividend'] % $a['divisor'] != 0) {
 			$a['divisor'] += 2;
 			if($a['divisor'] > $a['dividend'] ) $a['divisor'] = 2;
-		} /*EndOfWhile*/
+		} //EndOfWhile
 
 		$this->result = $a['dividend'] / $a['divisor'];
 
@@ -376,7 +376,7 @@ class AccessibleCaptcha {
 		$a['divisor'] = mt_rand(0,1) ? $a['divisor'] : numberToString($a['divisor']);
 
 		$this->replace($a);
-	} /*EndOfFunction*/
+	} //EndOfMethod
 
 	/*
 	 * Generates a estimate type challenge.
@@ -398,12 +398,12 @@ class AccessibleCaptcha {
 			if($distance < $lowestDistance) {
 				$index = $i;
 				$lowestDistance = $distance;
-			} /*EndOfIf*/
-		} /*EndOfFor*/
+			} //endOfIf
+		} //EndOfMethod
 		$this->result = $a['arglist'][$index];
 		$a['arglist'] = implode(', ', $a['arglist']);
 		$this->replace($a);
-	} /*EndOfFunction*/
+	} //EndOfMethod
 
 	/*
 	 * Generates a count type challenge.
@@ -416,7 +416,7 @@ class AccessibleCaptcha {
 
 		for($i=0; $i < $length; ++$i) {
 			$a['word'] .= chr( mt_rand(65, 90) );
-		} /*EndOfFor*/
+		} //EndOfFor
 		// choose a letter from the word.
 		$a['letter'] = $a['word']{ mt_rand(0, $length-1)};
 
@@ -426,7 +426,7 @@ class AccessibleCaptcha {
 		// how often does letter appears in the word
 		$this->result = substr_count( $a['word'], $a['letter']);
 		$this->replace($a);
-	} /*EndOfFunction*/
+	} //EndOfMethod
 
 	/*
 	 * Generates a empty_field type challenge.
@@ -437,7 +437,7 @@ class AccessibleCaptcha {
 		// easy job for us.
 		$this->result = '';
 		$this->replace( [] );
-	} /*EndOfFunction*/
+	} //EndOfMethod
 
 	/*
 	 * Generates a reverse type challenge.
@@ -450,10 +450,10 @@ class AccessibleCaptcha {
 
 		for($i=0; $i < $length; ++$i) {
 			$a['word'] .= chr( mt_rand(65, 90) );
-		} /*EndOfFor*/
+		} //EndOfFor
 		$this->result = strrev($a['word']);
 		$this->replace($a);
-	} /*EndOfFunction*/
+	} //endOfMethod
 
 	/*
 	 * Replaces the placeholder in the challenge text with the choosen arguments.
@@ -467,8 +467,8 @@ class AccessibleCaptcha {
 		$args['input_field'] = $this->getResultField();
 		foreach($args as $key => $value) {
 			$this->challenge = str_replace( '{'. $key .'}', $value, $this->challenge);
-		} /*EndOfForeach*/
-	} /*EndOfFunction*/
+		} //EndOfForeach
+	} //EndOfMethod
 
 	/*
 	 * Generates a id for this captcha and calls the method saveInSession to save
@@ -483,10 +483,10 @@ class AccessibleCaptcha {
 		// if so, make a recursion.
 		if( is_array($this->getFromSession($id) ) ) {
 			return $this->saveResult();
-		} /*EndOfIf*/
+		} //EndOfIf
 		$this->saveInSession(array('result' => $this->result, 'timestamp' => time() ), $id);
 		$this->challenge .= '<input type="hidden" name="'. $this->nameOfHiddenField .'" value="'. $id .'" />';
-	} /*EndOfFunction*/
+	} //EndOfMethod
 
 	/*
 	 * Generates a random string with a specific length from a character set of
@@ -505,9 +505,9 @@ class AccessibleCaptcha {
 		$count = count($a)-1;
 		for($i=0;$i<$length; ++$i) {
 			$str .= $a[ mt_rand(0, $count) ];
-		} /*EndOfFor*/
+		} //EndOfFor
 		return $str;
-	} /*EndOfFunction*/
+	} //EndOfMethod
 
 	/*
 	 * Includes the numberToString file for translating integers to strings.
@@ -521,8 +521,8 @@ class AccessibleCaptcha {
 			include($path);
 		} else {
 			throw new ErrorException("Cant't find $path.", 1);
-		} /*EndOfElse*/
-	} /*EndOfFunction*/
+		} //EndOfElse
+	} //EndOfMethod
 
 	/**
 	 * Returns a customized result field. The result field is the field, where the
@@ -570,13 +570,13 @@ class AccessibleCaptcha {
 			if(is_dir($path) ) {
 				echo '<li>Checking folder '. $path .'</li>';
 				$this->checkFiles($path);
-			} /*EndOfIf*/
+			} //endOfIf
 			else {
 				echo '<li>Error: '. $path ."isn't a directory.</li>";
-			} /*EndOfElse*/
-		}/*EndOfForeach*/
+			} //EndOfElse
+		}//endOfForeach
 		echo '</ul>';
-	} /*EndOfFunction.*/
+	} //EndOfMethod
 
 	private function checkFiles($path) {
 		echo "<ul>";
@@ -585,25 +585,25 @@ class AccessibleCaptcha {
 			if(file_exists($file) ) {
 				echo '<li>Checking file: '. $file .'</li>';
 				$this->checkTemplate($file, $type);
-			} /*EndOfIf*/
+			} //EndOfIf
 			else {
 				echo "<li>Error: can't find file ". $path ."</li>";
-			} /*EndOfElse*/
-		} /*EndOfForeach*/
+			} //EndOfElse
+		} //EndOfForeach
 		echo "<ul>";
-	} /*EndOfFunction*/
+	} //EndOfMethod
 
 	private function checkTemplate($path, $type) {
 		echo '<ul>';
 		include($path);
 		if(isset($challenge) && is_array($challenge) && count($challenge) > 0) {
 			$this->checkPlaceholder($challenge, $type);
-		} /*EndOfIf*/
+		} //EndOfIf
 		else {
 			echo "<li>Error! Can't find the array 'challenge'</li>";
-		} /*EndOfElse*/
+		} //EndOfElse
 		echo '</ul>';
-	} /*EndOfFunction*/
+	} //EndOfMethod
 
 	private function checkPlaceholder($c, $type) {
 		switch($type) {
@@ -615,7 +615,7 @@ class AccessibleCaptcha {
 			case 'count' : $p = [ 'letter', 'word' ]; break;
 			case 'reverse' : $p = [ 'word' ]; break;
 			case 'empty_field' : $p = []; break;
-		}/*EndOfSwitch*/
+		}//EndOfSwitch
 		$p[] = 'input_field';
 
 		for($i=0; $i < count($c); ++$i) {
@@ -625,11 +625,11 @@ class AccessibleCaptcha {
 				if(substr_count($c[$i], $key) == 0) {
 					$missingField[] = "{$key}";
 					$check = false;
-				}/*EndOfIf*/
-			} /*EndOfForeach*/
+				}//EndOfIf
+			} //EndOfForeach
 			// If we have an error in this field, we show the content.
 			// the user can search for the phrase.
 			if(!$check) echo "<li>Error: In field $i ". implode(', ', $missingField) ." is missing. Look for ". $c[$i] ."</li>";
-		} /*EndOfFor*/
-	}/*EndOfFunction*/
-} /*EndOfClass*/
+		} //EndOfFor.
+	} //EndOfMethod
+} //EndOfClass
