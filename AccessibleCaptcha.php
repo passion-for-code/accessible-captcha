@@ -1,5 +1,6 @@
 <?php
 namespace De\PassionForCode;
+include(__DIR__ .'/challengeTypes/ChallengeInterface.php');
 
 /**
  * A class for creating accessible captchas.
@@ -273,13 +274,15 @@ class AccessibleCaptcha {
 	 *
 	 * @param mixed $stop only needs to handle a recursion for searching a
 	 * 		challenge. no changes from outside please.
-	 * @throws exception, when no challenge can be found.
+	 * @throws exception, when a challenge file can't be found or no challenge can be found.
 	 * @since 1.0
 	 */
 	private function loadChallengeText($stop = false) {
 		$challengeType = $this->challengeList[ $this->challengeId ];
-		$includePath = $this->pathToClassDir . $this->	langDir .'/'. $this->language .'/'. $challengeType .'.php';
-		include($includePath);
+		$includePath = $this->pathToClassDir . $this->	langDir .'/'. $this->language .'/'. lcfirst($challengeType) .'.php';
+		if(file_exists($includePath ) ) include($includePath);
+		else throw new ErrorException("Can't find the file: $includePath", 1);
+
 		// from here, we have included an array that calls callenge.
 		if(isset($challenge) && is_array($challenge) ) {
 			$this->challenge = $challenge[ mt_rand(0, count($challenge)-1) ];
@@ -296,164 +299,24 @@ class AccessibleCaptcha {
 	/*
 	 * Calls the right method to generates a correct challenge.
 	 *
+	 * @throws Throws Exception, when the challenge Class couldn't be load or the loaded Class don't returns a array with an result entry. (look at challengeInterface)
 	 * @since 1.0
 	 */
 	private function generateChallenge() {
 		$type = $this->challengeList[ $this->challengeId ];
-		call_user_func( array($this, $type) );
-	} //EndOfMethod
-
-	/*
-	 * Generates a add type challenge.
-	 *
-	 * @since 1.0
-	 */
-	private function add() {
-		$a['arg1'] = mt_rand(0, 20);
-		$a['arg2'] = mt_rand(0, 20);
-		$this->result = $a['arg1'] + $a['arg2'];
-		// random decision for string or int representation of a Number.
-		$a['arg1'] = mt_rand(0, 1) ? $a['arg1'] : numberToString($a['arg1']);
-		$a['arg2'] = mt_rand(0, 1) ? $a['arg2'] : numberToString($a['arg2']);
+		$type = ucfirst($type);
+		$path = $this->pathToClassDir .'challengeTypes/'. $type .'.php'; 
+		if(file_exists( $path) ) require_once($path);
+		else throw new ErrorException("Cant't find $path.", 1);
+		$type = 'De\PassionForCode\\'. $type;
+		$c = new $type()	;
+		$a = $c->generateChallenge();
+		if(!isset($a['result'] ) ) throw new \ErrorException("The Challenge $type has not define a result entry.", 2);
+		$this->result = $a['result'];
+		unset($a['result']);	
 		$this->replace($a);
 	} //EndOfMethod
 
-
-	/*
-	 * Generates a sub type challenge.
-	 *
-	 * @since 1.0
-	 */
-	private function sub() {
-		$a['minuend'] = mt_rand(0, 20);
-		$a['subtrahend'] = mt_rand(0, $a['minuend']);
-		$this->result = $a['minuend'] - $a['subtrahend'];
-
-		// random decision for string or int representation of a number.
-		$a['minuend'] = mt_rand(0,1) ? $a['minuend'] : numberToString($a['minuend']);
-		$a['subtrahend'] = mt_rand(0,1) ? $a['subtrahend'] : numberToString($a['subtrahend']);
-		$this->replace($a);
-	} //EndOfMethod
-
-	/*
-	 * Generates a mul type challenge.
-	 *
-	 * @since 1.0
-	 */
-	private function mul() {
-		$a['arg1'] = mt_rand(0, 10);
-		$a['arg2'] = mt_rand(0, 10);
-
-		$this->result = $a['arg1'] * $a['arg2'];
-		// random decision for string or int representation of a Number.
-		$a['arg1'] = mt_rand(0, 1) ? $a['arg1'] : numberToString($a['arg1']);
-		$a['arg2'] = mt_rand(0, 1) ? $a['arg2'] : numberToString($a['arg2']);
-
-		$this->replace($a);
-	} //EndOfMethod
-
-	/*
-	 * Generates a div type challenge.
-	 *
-	 * @since 1.0
-	 */
-	private function div() {
-		$a['dividend'] = mt_rand(1, 20);
-		// we don't want uneven number.
-		if($a['dividend'] % 2 != 0) $a['dividend']++;
-
-		$a['divisor'] = mt_rand(1, $a['dividend']);
-		// we want a calculation without rest
-		while($a['dividend'] % $a['divisor'] != 0) {
-			$a['divisor'] += 2;
-			if($a['divisor'] > $a['dividend'] ) $a['divisor'] = 2;
-		} //EndOfWhile
-
-		$this->result = $a['dividend'] / $a['divisor'];
-
-		// random decision for string or int representation of a Number.
-		$a['dividend'] = mt_rand(0,1) ? $a['dividend'] : numberToString($a['dividend']);
-		$a['divisor'] = mt_rand(0,1) ? $a['divisor'] : numberToString($a['divisor']);
-
-		$this->replace($a);
-	} //EndOfMethod
-
-	/*
-	 * Generates a estimate type challenge.
-	 *
-	 * @since 1.0
-	 */
-	private function estimate() {
-		$a['arg1'] = mt_rand(0, 100);
-		// index of the value with the lowest distance
-		$index = 0;
-		// only a dummy value;
-		$lowestDistance = 10000;
-		$stop = mt_rand(2, 4);
-		for($i=0; $i < $stop; ++$i) {
-			$a['arglist'][$i] = mt_rand(0, 100);
-			$distance = $a['arg1'] - $a['arglist'][$i];
-			// correction of a negative number.
-			if($distance < 0) $distance *= -1;
-			if($distance < $lowestDistance) {
-				$index = $i;
-				$lowestDistance = $distance;
-			} //endOfIf
-		} //EndOfMethod
-		$this->result = $a['arglist'][$index];
-		$a['arglist'] = implode(', ', $a['arglist']);
-		$this->replace($a);
-	} //EndOfMethod
-
-	/*
-	 * Generates a count type challenge.
-	 *
-	 * @since 1.0
-	 */
-	private function count() {
-		$a['word'] = '';
-		$length = mt_rand(8, 12);
-
-		for($i=0; $i < $length; ++$i) {
-			$a['word'] .= chr( mt_rand(65, 90) );
-		} //EndOfFor
-		// choose a letter from the word.
-		$a['letter'] = $a['word']{ mt_rand(0, $length-1)};
-
-		for($i=0;$i < $length; ++$i) {
-			$a['word'][$i] = mt_rand(0,2)<= 1 ? $a['word'][$i] : $a['letter'];
-		}//EndOfFor
-		// how often does letter appears in the word
-		$this->result = substr_count( $a['word'], $a['letter']);
-		$this->replace($a);
-	} //EndOfMethod
-
-	/*
-	 * Generates a empty_field type challenge.
-	 *
-	 * @since 1.0
-	 */
-	private function empty_field() {
-		// easy job for us.
-		$this->result = '';
-		$this->replace( [] );
-	} //EndOfMethod
-
-	/*
-	 * Generates a reverse type challenge.
-	 *
-	 * @since 1.0
-	 */
-	private function reverse() {
-		$a['word'] = '';
-		$length = mt_rand(3, 4);
-
-		for($i=0; $i < $length; ++$i) {
-			$a['word'] .= chr( mt_rand(65, 90) );
-		} //EndOfFor
-		$this->result = strrev($a['word']);
-		$this->replace($a);
-	} //endOfMethod
 
 	/*
 	 * Replaces the placeholder in the challenge text with the choosen arguments.
@@ -518,7 +381,7 @@ class AccessibleCaptcha {
 	private function importNumberToStringFile() {
 		$path = $this->pathToClassDir . $this->langDir .'/'. $this->language .'/__number_to_string.php';
 		if(file_exists($path) ) {
-			include($path);
+			require_once($path);
 		} else {
 			throw new ErrorException("Cant't find $path.", 1);
 		} //EndOfElse
