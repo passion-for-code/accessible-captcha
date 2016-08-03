@@ -1,56 +1,55 @@
 # accessible-captcha
 
-A fully commented, easy to use  class for creating multilingual accessible captchas written in PHP.
+A fully documented, easy to use PHP class to create multilingual accessible captchas for web applications.
 
-##Why we need a accessible captcha
+## The need for an accessible captcha
 
-The most captcha solutions based on visual recognition of numbers, animals or other  things embeded in a Image. The problem of this kind of solution is, blind or visually impaired people can't solve this captchas, because the screenreader (software which translatet Text to speech)  can't read the image content.
+The biggest part of current popular captcha solutions is based on the visual recognition of numbers, animals or other things in images. The accessibility handicap for such a solution is, that blind or visually impaired people can not solve it. The screenreader can't extract information from an image. These people are excluded from the content protected by the captcha.
 
-##Which accessible captcha solutions are available
+## On the state of accessible captchas
 
-The most kind of accessible captcha solutions create a math-challenge. So like 4 + 6. Of course this is easy for Robots to parse. Better solutions use randomly string number combination like four plus 5.  But this can be easy parsed to, because we know the range of used numbers (mostly between 0 and 20) and the 4 operators (+, -, \*, /), so we can make mapping (plus => +), (minus => -) and so on.
+Most of the time, accessible captcha solutions create a math challenge. e.g. *4 + 6*. Of course, this is easy for machines to parse. Better solutions use combinations between numbers and strings, e.g. *four plus 5*.  But this can also be easily parsed, because we know the range of used numbers (mostly between 0 and 20) and the 4 operators (+, -, \*, /), so we can make a mapping (plus => +), (minus => -) and so on.
 
-##What makes this accessible captcha solution special?
+## What makes this accessible captcha solution so special?
 
-With this class you able to create challenges that works with semantic challenges. One example challenge could be  'John has 18 gummy bears. He splits them among his 3 friends. How many gummy bears has every friend?'.
+With this class you are able to create challenges with a dynamic syntax. For example, a challenge could be one of the following sentences:
 
-Or 'Max has $17. How much money does he still have, if Anna takes away $5?'.
+	John has 18 gummy bears. He splits them among his 3 friends. How many gummy bears has every friend?
+    Max has $17. How much money does he still have, if Anna takes away $5?
+	The character sequence aaakoukfasdjk contains how many k's?
+	Anna is 25  years old. She wants a friend with the smallest age difference. The ages of her potential friends are 65, 23, 96, 30. Which one does Anna choose?
 
-or 'The character sequence aaakoukfasdjk contains how many k's?'
+As you can see, the machine has to analyze the semantics of the string to understand the challenge.
 
-Or 'Anna is 25  years old. She wants a friend with the smallest age difference. The ages of her potential friends are 65, 23, 96, 30. Which one does Anna choose?'
+## How is the project designed?
 
-As you see, the robot must analyce the semantic of the string to know, what the challenge ist.
++ It is very easy to use. In general, only two function calls are needed: get the captcha and validate it.
++ It is customizable. You can add or change as many different sentences as you want, for every challenge type.
++ It supports multiple languages. Sentences can be easily translated into other languages. (The two languages currently supported are Englisch and German)
++ It is portable. The library has a small footprint and can be embedded in different frameworks.
++ It is easy to extend. New challenge types can be defined, other sentences for available types can be added. Check the wiki for more information.
 
-##How the project is designed?
+## Next steps
 
-+ Usage: Very easy to use. (It only needs 2 func-calls to handle the captcha-generation, showing, and check the users input.)
-+ customizable: You can add as many as semantic descriptions for every challenge type as you want.
-+ Multilingual: Easy to translate in other languages (current status: german and english)
-+ easy portable: It can easy be ported to any framework.
-+ Extendable: Easy to write new challengetypes. Look in the wiki for this.
+Clone or fork the accessible captcha, test it, and work with us to build the best accessible captcha ever. Testing it is very easy: in the main directory is a subdirectory *examples*. You only need to call examples/english.php to test the captcha in english or examples/german.php for the german captcha.
 
-##The next step
-
-Fork the accessible captcha, test it, and work with us to build the best accessible captcha ever. Testing ist very easy, in the main directory is a subdirectory examples. You only need to call localhost/pathToAccessibleCaptcha/examples/english.php to test the Captcha in english or localhost/pathToAccessibleCaptcha/examples/german.php for german. 
-
-##How can I help
+## How can you help
 
 You can help to improve the accessible captcha by
 
-+ programming new challenge-types.
-+ translate the existing challenges.
-+ Write new semantic description for existing challenges e. g. If a family has 5 members and they plan to get 3 children in the nex 5 years, how many members has the family then?
-+ test and report bugs.
-+ make suggestion for new challenge types.
-+ tell every webmaster about accessible captcha.
++ programming new challenge types
++ translate existing challenges
++ write new, syntactically different sentences for existing challenges, e. g. *If a family has 5 members and they plan to get 3 children in the nex 5 years, how many members has the family then?*
++ test it and report bugs
++ make suggestions for new challenge types
++ tell every webmaster about the accessible captcha
 
-##Thank you
+## Thank you
 
-Lets make the world more accessible for everybody. This captcha solution helps not only blind people, it helps everybody who hates solve unsolvable, ugly images with unreadable strings. The goal wasn't to design a solution that no robot can ever solve (no captcha solution can provide this), the goal was a solution that it's good enough to prevent the most bots spaming your site.
+Lets make the world more accessible for everybody. This captcha solution is a help not only for blind people, but also for everybody hating captchas which are difficult to solve and use ugly images with unreadable strings.
 
-Look, either you design a so hard visual challenge that no robot and no human can solve it, or you try your best to get a challenge thats hard enought for robots, and easy for people. I'm always design sites for good user experince, not only to prevent robots to use my service.
+The goal wasn't to design a solution that no machine can ever solve (no captcha solution can do this), the goal was to provide a solution that is good enough to prevent the most bots spamming your site. Look, either you design a visual challenge so hard that no machine and no human can solve it, or you try your best to get a challenge thats difficult enough for machines and still easy for people to use.
 
-Look in the Wiki for a documentation, usage examples, how create semantic description, how to translate existing challenges and more.
+Look in the wiki for the documentation, usage examples, infos on how create other sentences, infos on how to translate existing challenges and more.
 
 Thank you!
